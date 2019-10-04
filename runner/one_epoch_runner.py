@@ -6,6 +6,65 @@ import zutils.tf_math_funcs as tmf
 from zutils.py_utils import *
 from scipy.io import savemat
 
+
+def unnest_dict(dict_, join_subkeys=True, subkey_sep="_"):
+    """Takes a nested dictionary structure and unpacks the inner dictionaries into the topmost dictionary.
+    
+    This is useful when working with recursively nested
+    dict structures and the goal is to convert them to a DataFrame.
+
+    Parameters
+    ----------
+    dict_ : dict
+        the nested dictionary structure to transform
+    join_subkeys : bool, optional
+        if the key from the partent level should be joined to the child level key.
+        For example : {"test" : {"1" : 2, "3" : 4}} will result in {"test_1" : 2, "test_3" : 4} if join_subkeys is True.
+        If False, the keys from the children will be taken. This could overwrite parrent elements in the worst case.
+        By default True. 
+    subkey_sep : str, optional
+        the seperating character to use for joining subkeys. By default "_".
+    
+    Returns
+    -------
+    dict
+        new dictionary with unnested structure
+
+    Examples
+    --------
+        dict_ = {1 : 2, 3 : {4 : 5, 6 : 7}}
+        dict_["test"] = dict_.copy()
+        new_dict = unnest_dict(dict_)
+        dict_, new_dict
+
+        # create dataframe from old dict results in dict becoming a value in the table
+        df1 = pd.DataFrame(dict_)
+        
+        # creating dataframe from new dict results a nice tabular dataframe
+        df = pd.DataFrame(listify_dict(new_dict))
+    """
+
+    new_dict = {}
+    A = {}  # subdict that contains only non-dict values
+    B = {}  # subdict that contains only dict values
+    for k, v in dict_.items():
+        if isinstance(v, dict):
+            B[k] = v
+        else:
+            A[k] = v
+
+    new_dict.update(A)
+    for k, b in B.items():
+        if join_subkeys:
+            new_b = {subkey_sep.join([str(k), str(bk)]): bv for bk, bv in b.items()}
+        else:
+            new_b = b
+        new_b = unnest_dict(
+            new_b, join_subkeys=join_subkeys, subkey_sep=subkey_sep
+        )  # recurse into subdictionary
+        new_dict.update(new_b)
+    return new_dict
+
 class OneEpochRunner:
 
     def __init__(
@@ -103,6 +162,7 @@ class OneEpochRunner:
                 if not os.path.exists(self.dir_path):
                     os.makedirs(self.dir_path)
                 savemat(self.output_fn+'_'+'%06d'%num_samples_finished+'.mat',output_val)
+                np.savez_compressed(self.output_fn+'_'+'%06d'%num_samples_finished+'.npz', **unnest_dict(output_val))
                 print('Saving part of output to '+ self.output_fn+'_'+'%06d'%num_samples_finished+'.mat')
                 output_val = []
             output_val_single = self.run_single_batch(sess)
@@ -113,6 +173,5 @@ class OneEpochRunner:
                 lambda *args: np.concatenate(args, axis=self.batch_axis),
                 *output_val)
             savemat(self.output_fn + ".mat", output_val)
+            np.savez_compressed(self.output_fn + ".npz", **unnest_dict(output_val))
             print('Saving output to ' + self.output_fn + ".mat")
-
-
