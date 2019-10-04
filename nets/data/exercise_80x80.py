@@ -32,10 +32,10 @@ class Net:
         current_path = os.path.dirname(os.path.abspath(__file__))
         root_path = current_path[:-9]
         self._exercise_train = (
-            root_path + "data/exercise_dataset/csvs/instance_level_train_split.csv"
+            os.path.join(root_path, "data/exercise_dataset/csvs/instance_level_train_split.csv")
         )
         self._exercise_test = (
-            root_path + "data/exercise_dataset/csvs/instance_level_test_split.csv"
+            os.path.join(root_path, "data/exercise_dataset/denseposed_csv/denseposed_instance_level_test_split.csv")
         )
         self._impath = root_path + "data/exercise_dataset/"
 
