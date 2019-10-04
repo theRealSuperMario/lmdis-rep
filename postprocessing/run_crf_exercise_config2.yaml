@@ -1,0 +1,39 @@
+#densepose_csv_path: "/mnt/comp/code/nips19/data/exercise_data/exercise_dataset/denseposed_csv/denseposed_instance_level_test_split.csv"
+#data_root : "/mnt/comp/code/nips19/data/exercise_data/exercise_dataset"
+data_root : "/export/home/sabraun/code/nips19/data/exercise_data/exercise_dataset"
+densepose_csv_path : "/export/home/sabraun/code/nips19/data/exercise_data/exercise_dataset/denseposed_csv/denseposed_instance_level_test_split.csv"
+data_fname_col : "denseposed_im1"
+
+segmentation_algorithm_args:
+  var : 0.01
+  n_steps : 5
+
+n_inferred_parts : 25
+
+dp_semantic_remap_dict : {
+    "arms" : ['left_upper_arm',
+             'right_upper_arm',
+             'left_upper_arm',
+             'right_upper_arm',
+             'left_lower_arm',
+             'right_lower_arm',
+             'left_lower_arm',
+             'right_lower_arm',
+             'right_hand',
+             'left_hand'
+            ],
+    "legs" : [
+        'back_upper_front_leg',
+        'back_upper_left_leg',
+        'right_upper_leg',
+        'left_upper_leg',
+        'back_right_lower_leg',
+        'back_left_lower_leg',
+        'right_lower_leg',
+        'left_lower_leg',
+    ],
+    'head': ['left_head', 'right_head'],
+    'feet': ['left_foot', 'right_foot'],
+    'torso': ['chest', "back"],
+    'background' : ['background']
+}
