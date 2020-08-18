@@ -1,3 +1,107 @@
+# Update
+
+## Exercise
+
+```bash
+conda activate zhang19
+python exp-ae-exercise-10.py
+python exp-ae-exercise-25.py
+```    
+
+## Deepfashion
+
+```bash
+conda activate zhang19
+python exp-ae-deepfashion-10.py
+python exp-ae-deepfashion-25.py
+```
+
+## Pennaction
+
+```bash
+conda activate zhang19
+
+python exp-ae-pennaction-25.py
+```
+
+## Symlinks
+
+```bash
+ln -s /export/scratch/compvis_datasets/exercise_dataset .
+ln -s /export/scratch/compvis_datasets/deepfashion .
+ln -s /export/scratch/compvis_datasets/PennAction pennaction
+```
+
+## Evaluation
+
+```bash
+## exercise
+conda activate zhang19
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+python tools/run_test_in_folder.py \
+results/exercise_25 \
+"'test_subset':'test', 'test_limit':2000" \
+test.test \
+"" \
+False True
+
+## deepfashion
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+python tools/run_test_in_folder.py \
+results/deepfashion_25 \
+"'test_subset':'test', 'test_limit':2000" \
+test.test \
+"" \
+False True
+
+## pennaction
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+python tools/run_test_in_folder.py \
+results/pennaction_25 \
+"'test_subset':'test', 'test_limit':800" \
+test.test \
+"" \
+False True
+```
+
+## Postprocessing
+
+```bash
+# conda activate nips19
+python postprocessing/run_crf.py \
+results/exercise_25/test.test \
+results/exercise_25/test.test/postprocessing1 \
+postprocessing/run_crf_exercise_config1.yaml --n-processes 8
+
+python postprocessing/run_crf.py \
+results/exercise_25/test.test \
+results/exercise_25/test.test/postprocessing2 \
+postprocessing/run_crf_exercise_config2.yaml --n-processes 8
+
+python postprocessing/run_crf.py \
+results/exercise_25/test.test \
+results/exercise_25/test.test/postprocessing3 \
+postprocessing/run_crf_exercise_config3.yaml --n-processes 8
+
+
+python postprocessing/run_crf.py \
+results/deepfashion_25/test.test \
+results/deepfashion_25/test.test/postprocessing1 \
+postprocessing/run_crf_deepfashion_config1.yaml --n-processes 8
+
+python postprocessing/run_crf.py \
+results/deepfashion_25/test.test \
+results/deepfashion_25/test.test/postprocessing2 \
+postprocessing/run_crf_deepfashion_config2.yaml --n-processes 8
+
+python postprocessing/run_crf.py \
+results/deepfashion_25/test.test \
+results/deepfashion_25/test.test/postprocessing3 \
+postprocessing/run_crf_deepfashion_config3.yaml --n-processes 8
+```
+
+
+
 Code for "Unsupervised Discovery of Object Landmarks as Structural Representations"
 =====
 
