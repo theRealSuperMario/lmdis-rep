@@ -31,16 +31,16 @@ class Net:
 
         current_path = os.path.dirname(os.path.abspath(__file__))
         root_path = current_path[:-9]
-        self._exercise_train = (
+        self.deepfashion_train = (
             os.path.join(root_path, "data/deepfashion/csvs/filted_up_train.csv")
         )
-        self._exercise_test = (
+        self.deepfashion_test = (
             os.path.join(root_path, "data/deepfashion/denseposed_csvs/denseposed_filted_up_test.csv")
         )
         self._impath = root_path + "data/deepfashion/"
 
-        self._train_imlist = pd.read_csv(self._exercise_train)["fname"]
-        self._test_imlist = pd.read_csv(self._exercise_test)["fname"]
+        self._train_imlist = pd.read_csv(self.deepfashion_train)["fname"]
+        self._test_imlist = pd.read_csv(self.deepfashion_test)["fname"]
         if subset_name == "train":
             self._imlist = self._train_imlist
         if subset_name == "test":

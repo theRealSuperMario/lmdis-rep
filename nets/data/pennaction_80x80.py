@@ -31,16 +31,18 @@ class Net:
 
         current_path = os.path.dirname(os.path.abspath(__file__))
         root_path = current_path[:-9]
-        self.deepfashion_train = (
-            os.path.join(root_path, "data/deepfashion/csvs/filted_up_train.csv")
+        self._pennaction_train = (
+            os.path.join(root_path, "data/PennAction/denseposed_csv/denseposed_jumping_jacks_train.csv")
         )
-        self.deepfashion_test = (
-            os.path.join(root_path, "data/deepfashion/denseposed_csvs/denseposed_filted_up_test.csv")
+        self._pennaction_test = (
+            os.path.join(root_path, "data/PennAction/denseposed_csv/denseposed_jumping_jacks_test.csv")
         )
-        self._impath = root_path + "data/deepfashion/"
+        self._impath = root_path + "data/PennAction/"
 
-        self._train_imlist = pd.read_csv(self.deepfashion_train)["fname"]
-        self._test_imlist = pd.read_csv(self.deepfashion_test)["fname"]
+        # with open(self._cat_train, "r") as f:
+        # self._train_imlist = f.read().splitlines()
+        self._train_imlist = pd.read_csv(self._pennaction_train, header=None, names=["id", "fname", "denseposed_fname"])["fname"]
+        self._test_imlist = pd.read_csv(self._pennaction_test, header=None, names=["id", "fname", "denseposed_fname"])["fname"]
         if subset_name == "train":
             self._imlist = self._train_imlist
         if subset_name == "test":
@@ -54,8 +56,8 @@ class Net:
         self._cur_epoch = 0  # current num of epoch
         self._cur_iter = 0  # num of batches returned
         self._num_fields = 1
-        self._out_h = 128
-        self._out_w = 128
+        self._out_h = 80
+        self._out_w = 80
 
         self._image_cache = []
 
@@ -194,7 +196,7 @@ class Net:
 
     @staticmethod
     def output_shapes():
-        t = [(None, self._out_h, self._out_w, 3)]  # None for batch size
+        t = [(None, 80, 80, 3)]  # None for batch size
         return t
 
     @staticmethod

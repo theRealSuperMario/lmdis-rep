@@ -52,7 +52,7 @@ def list_of_dicts2dict_of_lists(list_of_dicts: List[Dict]) -> Dict[Hashable, Lis
 def batched_keypoints_to_segments(img, keypoints, segmentation_algorithm):
     n_keypoints = keypoints.shape[0]
     MAP = segmentation_algorithm(img, keypoints)
-    MAP_colorized = imageutils.make_colors(n_keypoints + 1)[MAP]
+    MAP_colorized = imageutils.make_colors(n_keypoints + 1, with_background=True, background_id=0)[MAP]
     heatmaps = imageutils.keypoints_to_heatmaps(
         img.shape[:2], keypoints, segmentation_algorithm.var
     )
@@ -189,7 +189,7 @@ def main(infer_dir, output_folder, run_crf_config, n_processes):
             data.append(outputs)
     data = list_of_dicts2dict_of_lists(data)
     data = {k: np.concatenate(data[k]) for k in [img_key, mu_key]}
-    data[mu_key] = (data[mu_key][..., ::-1] - 0.5) * 1.9
+    data[mu_key] = (data[mu_key][..., ::-1] - 0.5) * 1.8
     data[img_key] = imageutils.convert_range(data[img_key], [0, 1], [0, 255])
 
     # data[mu_key] = data[mu_key][:16]
@@ -200,8 +200,8 @@ def main(infer_dir, output_folder, run_crf_config, n_processes):
     )
     tuples = list(
         zip(
-            np.split(data[img_key], n_processes, 0),
-            np.split(data[mu_key], n_processes, 0),
+            np.array_split(data[img_key], n_processes, 0),
+            np.array_split(data[mu_key], n_processes, 0),
         )
     )
     processed_data = []
@@ -265,11 +265,8 @@ def main(infer_dir, output_folder, run_crf_config, n_processes):
     os.makedirs(target_dir, exist_ok=True)
 
     background_color = np.array([1, 1, 1])
-    colors1 = imageutils.make_colors(config["n_inferred_parts"] + 1)
-    colors2 = imageutils.make_colors(len(dp_new_part_list))
-    colors2 = np.insert(
-        colors2, dp_new_part_list.index("background"), background_color, axis=0
-    )
+    colors1 = imageutils.make_colors(config["n_inferred_parts"] + 1, with_background=True, background_id=0)
+    colors2 = imageutils.make_colors(len(dp_new_part_list), with_background=True, background_id=dp_new_part_list.index("background"))
     for i, (im1, im2, im3) in enumerate(
         zip(labels, remapped_inferred, remapped_gt_segmentation)
     ):
