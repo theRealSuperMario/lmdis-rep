@@ -192,8 +192,9 @@ def main(infer_dir, output_folder, run_crf_config, n_processes):
     data[mu_key] = (data[mu_key][..., ::-1] - 0.5) * 1.8
     data[img_key] = imageutils.convert_range(data[img_key], [0, 1], [0, 255])
 
-    # data[mu_key] = data[mu_key][:16]
-    # data[img_key] = data[img_key][:16]
+    # for debugging, reduce number of data points
+    data[mu_key] = data[mu_key]
+    data[img_key] = data[img_key]
 
     process_func = functools.partial(
         process_batches, **{"segmentation_algorithm": segmentation_algorithm}
@@ -234,7 +235,8 @@ def main(infer_dir, output_folder, run_crf_config, n_processes):
     fname_col = config["data_fname_col"]
 
     iuv_files = get_iuv_files(densepose_csv_path, data_root, len(labels), fname_col)
-    iuvs = np.stack([cv2.imread(x, -1) for x in iuv_files], axis=0)[..., 0]
+    iuvs = [denseposelib.resize_labels(cv2.imread(x, -1)[..., 0], labels.shape[1:]) for x in iuv_files]
+    iuvs = np.stack(iuvs, axis=0)
 
     dp_semantic_remap_dict = config["dp_semantic_remap_dict"]
     dp_new_part_list = sorted(list(dp_semantic_remap_dict.keys()))
@@ -242,7 +244,7 @@ def main(infer_dir, output_folder, run_crf_config, n_processes):
         dp_semantic_remap_dict, dp_new_part_list
     )
 
-    iuvs = denseposelib.resize_labels(iuvs, labels.shape[1:])
+    # iuvs = denseposelib.resize_labels(iuvs, labels.shape[1:])
 
     remapped_gt_segmentation, remapped_inferred = denseposelib.get_best_segmentation(
         iuvs, labels, dp_remap_dict
