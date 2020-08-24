@@ -40,7 +40,7 @@ if __name__ == "__main__":
         "latent_dim": num_keypoints * 2 + (num_keypoints + 1) * patch_feature_dim,
         "train_color_jittering": True,
         "train_random_mirroring": False,
-        "train_batch_size": 16,
+        "train_batch_size": 12,
         "train_shuffle_capacity": 1000,
         "learning_rate": learning_rate,
         "max_epochs": 2000,
